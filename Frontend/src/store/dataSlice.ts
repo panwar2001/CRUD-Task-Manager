@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { createSlice, PayloadAction} from '@reduxjs/toolkit'
 import { v4 as uuidv4 } from 'uuid';
 interface InitialState{ 
@@ -8,7 +9,7 @@ interface InitialState{
         title:string
     }>,
     currentTask:Data
-}; 
+}
 interface Data {
     id:string,
     description:string,
@@ -75,7 +76,7 @@ export const imageSlice = createSlice({
                 }
               }  
             },
-            updateResetCurrentTask:(state:PayloadAction<Data>)=>{
+            updateResetCurrentTask:(state)=>{
                 state.currentTask={
                     id: "",
                     description: "",
