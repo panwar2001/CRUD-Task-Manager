@@ -1,8 +1,7 @@
-import * as React from "react"
-
 import { cn } from "@/lib/utils"
 import { useMediaQuery } from "@/hooks/use-media-query"
 import { Button } from "@/components/ui/button"
+import { RootState } from "./store/store"
 import {
   Dialog,
   DialogContent,
@@ -30,13 +29,17 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  SelectLabel
 } from "@/components/ui/select"
-import { constants } from "crypto"
+import { useDispatch,useSelector} from 'react-redux';
+import { updateData,updateResetCurrentTask} from "./store/dataSlice"
+import { useState } from "react";
+import { v4 as uuidv4 } from 'uuid';
 
 function Edit({buttonText}) {
-  const [open, setOpen] = React.useState(false)
+  const [open, setOpen] = useState(false);
+  const dispatch=useDispatch();
   const isDesktop = useMediaQuery("(min-width: 768px)")
-  console.log("dksf "+buttonText)
   if (isDesktop) {
     return (
       <Dialog open={open} onOpenChange={setOpen}>
@@ -50,7 +53,7 @@ function Edit({buttonText}) {
             Make changes to your task here. Click save when you're done.
             </DialogDescription>
           </DialogHeader>
-          <ProfileForm />
+          <ProfileForm  setOpen={setOpen} />
         </DialogContent>
       </Dialog>
     )
@@ -68,10 +71,10 @@ function Edit({buttonText}) {
             Make changes to your task here. Click save when you're done.
           </DrawerDescription>
         </DrawerHeader>
-        <ProfileForm className="px-4" />
+        <ProfileForm  setOpen={setOpen}/>
         <DrawerFooter className="pt-2">
           <DrawerClose asChild>
-            <Button variant="outline">Cancel</Button>
+            <Button variant="outline" onClick={()=>dispatch(updateResetCurrentTask())}>Cancel</Button>
           </DrawerClose>
         </DrawerFooter>
       </DrawerContent>
@@ -79,31 +82,41 @@ function Edit({buttonText}) {
   )
 }
 const statusItems=["todo", "pending", "in progress", "blocked", "bug", "completed"];
-function ProfileForm({ className }: React.ComponentProps<"form">) {
+
+
+const ProfileForm=({setOpen}: React.ComponentProps<"form">)=> {
+  const dispatch=useDispatch();
+  const [task,setTask]=useState(useSelector((state:RootState)=>state.Data.currentTask));
+  const onSubmit=(e)=>{
+    e.preventDefault();
+    dispatch(updateData(task));
+    dispatch(updateResetCurrentTask());
+    setOpen(false);
+  }
   return (
-    <form className={cn("grid items-start gap-4", className)}>
+    <form className={cn("grid items-start gap-4", "px-4")}>
       <div className="grid gap-2">
         <Label htmlFor="title">Title</Label>
-        <Input type="text" id="title" defaultValue="Title..." />
+        <Input defaultValue={task.title} onChange={(e)=>setTask({...task,title:e.target.value})} type="text" id="title" placeholder="Title..." required/>
       </div>
       <div className="grid gap-2">
         <Label htmlFor="description">Description</Label>
-        <Textarea id="description" placeholder="Type your task here..." />
+        <Textarea defaultValue={task.description} onChange={(e)=>setTask({...task,description:e.target.value})} id="description" placeholder="Type your task here..." />
       </div>
       <div className="grid gap-2">
-      <Select>
+      <Select onChange={()=>console.log('dsf')}>
       <Label htmlFor="status">Status</Label>
-      <SelectTrigger className="w-[180px]">
-        <SelectValue placeholder="to do" />
+      <SelectTrigger  className="w-[180px]">
+        <SelectValue  placeholder="to do" />
       </SelectTrigger>
       <SelectContent>
         {statusItems.map(statusItem=>
-        <SelectItem value={statusItem}>{statusItem}</SelectItem>
+        <SelectItem onSelect={()=>console.log("sdkf")} value={statusItem} key={uuidv4()} >{statusItem}</SelectItem>
         )}
       </SelectContent>
     </Select>
     </div>
-      <Button type="submit">Save changes</Button>
+      <Button type="submit" onClick={onSubmit}>Save changes</Button>
     </form>
   )
 }

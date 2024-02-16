@@ -1,7 +1,5 @@
- 
-import * as React from "react"
+import * as React from 'react';
 import {
-  ColumnDef,
   ColumnFiltersState,
   SortingState,
   VisibilityState,
@@ -12,15 +10,14 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, Settings ,Trash2 } from "lucide-react"
- 
+import { ChevronDown, Settings ,Trash2 } from "lucide-react"
+import { useSelector,useDispatch} from 'react-redux';
+import { RootState } from "./store/store";
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "./components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
@@ -33,35 +30,9 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import Edit from "./Edit";
-const data: Paytment[] = [
-  {
-    id: "m5gr84i9",
-    description: 316,
-    status: "success",
-    title: "ken99@yahoo.com",
-  },
-  {
-    id: "3u1reuv4",
-    description: 242,
-    status: "success",
-    title: "Abe45@gmail.com",
-  },
-  {
-    id: "derv1ws0",
-    title: "Monserrat44@gmail.com",
-    description: 837,
-    status: "processing",
-  },
-]
+import { updateCurrentTask ,updateDelete} from './store/dataSlice';
  
-export type Payment = {
-  id: string
-  status: "pending" | "processing" | "success" | "failed"
-  description: number
-  title: string
-}
- 
-export const columns: ColumnDef<Payment>[] = [
+export const columns= [
   {
     accessorKey: "status",
     header: "Status",
@@ -72,30 +43,14 @@ export const columns: ColumnDef<Payment>[] = [
   {
     accessorKey: "title",
     header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Title
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
+      return (<>Title</>)
     },
     cell: ({ row }) => <div className="lowercase">{row.getValue("title")}</div>,
   },
   {
     accessorKey: "description",
     header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-            Description
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
+      return (<>Description</>)
     },
     cell: ({ row }) => <div className="lowercase">{row.getValue("description")}</div>,
   },  
@@ -104,17 +59,25 @@ export const columns: ColumnDef<Payment>[] = [
     header: ({ column }) => {
       return <Settings className="ml-4"/>
     },
-  cell: ({ row }) => <div className="lowercase">{<Edit buttonText='Edit'/>}</div>,
+  cell: ({ row }) =>{
+     const dispatch=useDispatch();
+     return <div onClick={()=>dispatch(updateCurrentTask(row.original.id))} className="lowercase">{<Edit  buttonText='Edit' />}</div>
+    },
   },{
     accessorKey: "delete",
     header: ({ column }) => {
       return <>Delete</>
     },
-    cell: ({ row }) => <div className="lowercase">{<Button variant="secondary"><Trash2 className="text-red-900" /></Button>}</div>,
+    cell: ({ row }) =>{ 
+    const dispatch=useDispatch();
+    return <div className="lowercase">{<Button onClick={()=>dispatch(updateDelete(row.original.id))} variant="secondary"><Trash2 className="text-red-900" /></Button>}</div>
+    },
   }
 ]
  
-export function DataTableDemo() {
+const DataTable=()=> {
+  const dispatch=useDispatch();
+  const data=useSelector((state:RootState)=>state.Data.data);
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -258,4 +221,4 @@ export function DataTableDemo() {
     </div>
   )
 }
-export default DataTableDemo;
+export default DataTable;
