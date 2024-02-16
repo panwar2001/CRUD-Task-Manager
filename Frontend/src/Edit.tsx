@@ -1,6 +1,5 @@
 import { cn } from "@/lib/utils"
 import { useMediaQuery } from "@/hooks/use-media-query"
-import { Button } from "@/components/ui/button"
 import { RootState } from "./store/store"
 import {
   Dialog,
@@ -23,19 +22,22 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "./components/ui/textarea"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  SelectLabel
-} from "@/components/ui/select"
 import { useDispatch,useSelector} from 'react-redux';
 import { updateData,updateResetCurrentTask} from "./store/dataSlice"
 import { useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
+import { ChevronDown } from "lucide-react"
 
+import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 function Edit({buttonText}) {
   const [open, setOpen] = useState(false);
   const dispatch=useDispatch();
@@ -81,14 +83,17 @@ function Edit({buttonText}) {
     </Drawer>
   )
 }
-const statusItems=["todo", "pending", "in progress", "blocked", "bug", "completed"];
+const statusItems=["To do", "pending", "in progress", "blocked", "bug", "completed"];
 
 
 const ProfileForm=({setOpen}: React.ComponentProps<"form">)=> {
   const dispatch=useDispatch();
   const [task,setTask]=useState(useSelector((state:RootState)=>state.Data.currentTask));
-  const onSubmit=(e)=>{
+  const onSubmit=(e)=>{ 
     e.preventDefault();
+    if(task.title.trim()==""){
+      return;
+    }
     dispatch(updateData(task));
     dispatch(updateResetCurrentTask());
     setOpen(false);
@@ -104,18 +109,24 @@ const ProfileForm=({setOpen}: React.ComponentProps<"form">)=> {
         <Textarea defaultValue={task.description} onChange={(e)=>setTask({...task,description:e.target.value})} id="description" placeholder="Type your task here..." />
       </div>
       <div className="grid gap-2">
-      <Select onChange={()=>console.log('dsf')}>
-      <Label htmlFor="status">Status</Label>
-      <SelectTrigger  className="w-[180px]">
-        <SelectValue  placeholder="to do" />
-      </SelectTrigger>
-      <SelectContent>
-        {statusItems.map(statusItem=>
-        <SelectItem onSelect={()=>console.log("sdkf")} value={statusItem} key={uuidv4()} >{statusItem}</SelectItem>
-        )}
-      </SelectContent>
-    </Select>
-    </div>
+      <Label htmlFor="state">State</Label>
+      <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+      <Button variant="outline">{task.status}
+      <ChevronDown className="h-4 w-4" />
+      </Button>
+      </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-56">
+            <DropdownMenuLabel>Panel Position</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuRadioGroup value={task.status} onValueChange={(value:string)=>setTask({...task,status:value})}>
+              {statusItems.map(item=>{
+              return <DropdownMenuRadioItem key={uuidv4()} value={item}>{item}</DropdownMenuRadioItem>
+              })}
+            </DropdownMenuRadioGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>   
+      </div>
       <Button type="submit" onClick={onSubmit}>Save changes</Button>
     </form>
   )

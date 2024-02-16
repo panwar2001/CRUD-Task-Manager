@@ -37,7 +37,7 @@ const initialState:InitialState= {
       currentTask: {
         id: "",
         description: "",
-        status: "",
+        status: "To do",
         title: "",
       },
 }

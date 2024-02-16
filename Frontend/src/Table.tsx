@@ -31,7 +31,6 @@ import {
 } from "@/components/ui/table"
 import Edit from "./Edit";
 import { updateCurrentTask ,updateDelete} from './store/dataSlice';
- 
 export const columns= [
   {
     accessorKey: "status",
