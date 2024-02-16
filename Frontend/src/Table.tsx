@@ -12,7 +12,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
+import { ArrowUpDown, ChevronDown, Settings ,Trash2 } from "lucide-react"
  
 import { Button } from "@/components/ui/button"
 import {
@@ -32,8 +32,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
- 
-const data: Payment[] = [
+import Edit from "./Edit";
+const data: Paytment[] = [
   {
     id: "m5gr84i9",
     description: 316,
@@ -98,39 +98,20 @@ export const columns: ColumnDef<Payment>[] = [
       )
     },
     cell: ({ row }) => <div className="lowercase">{row.getValue("description")}</div>,
-  }, 
+  },  
   {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const payment = row.original
- 
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
-            >
-              Delete
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
-            >
-              Edit
-            </DropdownMenuItem>
-
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )
+    accessorKey: "edit",
+    header: ({ column }) => {
+      return <Settings className="ml-4"/>
     },
-  },
+  cell: ({ row }) => <div className="lowercase">{<Edit buttonText='Edit'/>}</div>,
+  },{
+    accessorKey: "delete",
+    header: ({ column }) => {
+      return <>Delete</>
+    },
+    cell: ({ row }) => <div className="lowercase">{<Button variant="secondary"><Trash2 className="text-red-900" /></Button>}</div>,
+  }
 ]
  
 export function DataTableDemo() {
@@ -172,7 +153,7 @@ export function DataTableDemo() {
           }
           className="max-w-sm"
         />
-        <Button>Add Task</Button>
+        <Edit  buttonText='Add New Task'/>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
