@@ -18,21 +18,9 @@ interface Data {
 const initialState:InitialState= {
     data:[ {
         id: "m5gr84i9",
-        description: "hello ",
-        status: "success",
-        title: "ken99@yahoo.com",
-      },
-      {
-        id: "3u1reuv4",
-        description: "kdsfj ",
-        status: "success",
-        title: "Abe45@gmail.com",
-      },
-      {
-        id: "derv1ws0",
-        title: "Monserrat44@gmail.com",
-        description: "kdfjdsf",
-        status: "processing",
+        description: "Default Description...",
+        status: "done",
+        title: "Default Title...",
       }],
       currentTask: {
         id: "",
