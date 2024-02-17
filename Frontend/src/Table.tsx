@@ -32,7 +32,8 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import Edit from "./Edit";
-import { updateCurrentTask ,updateDelete} from './store/dataSlice';
+import axios from 'axios';
+import { updateInit,updateCurrentTask ,updateDelete} from './store/dataSlice';
 export const columns= [
   {
     accessorKey: "status",
@@ -78,6 +79,17 @@ export const columns= [
  
 const DataTable=()=> {
   const dispatch=useDispatch();
+  React.useEffect(()=>{
+  axios.get('http://localhost:8000/api/tasks')
+                  .then((response)=> {
+                    console.log(response.data)
+                    dispatch(updateInit(response.data))
+                  })
+                  .catch((error)=>{
+                    console.log(error);
+                  });
+  },[dispatch]);
+  // React.useEffect(()=>{ console.log('sdf')},[dispatch])
   const data=useSelector((state:RootState)=>state.Data.data);
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(

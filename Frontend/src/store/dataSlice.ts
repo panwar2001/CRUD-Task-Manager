@@ -84,8 +84,11 @@ export const imageSlice = createSlice({
                     title: "",
                   };
             },
+            updateInit:(state,action)=>{
+              state.data=action.payload;
+            }
     },
 })
 
-export const {updateDelete,updateData,updateCurrentTask,updateResetCurrentTask} = imageSlice.actions;
+export const {updateInit,updateDelete,updateData,updateCurrentTask,updateResetCurrentTask} = imageSlice.actions;
 export default imageSlice.reducer;
