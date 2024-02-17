@@ -39,23 +39,61 @@ async function createTable() {
 createTable();
 // - GET /api/tasks  Retrieve all tasks
 const getTasks = (request, response) => {
+    pool.query('SELECT * FROM tasks', (error, results) => {
+      if (error) {
+        throw error
+      }
+      response.status(200).json(results.rows)
+    })
 }
 
 
   // - GET /api/tasks/:id - Retrieve a specific task by ID
 const getTaskById = (request, response) => {
-
+    const id = request.params.id
+    pool.query('SELECT * FROM tasks WHERE id = $1', [id], (error, results) => {
+      if (error) {
+        throw error
+      }
+      response.status(200).json(results.rows)
+    })
 }
 
 // - POST /api/tasks - Create a new task
 const createTask = (request, response) => {
+    const {id, title, description, status} = request.body
+    pool.query('INSERT INTO tasks(id, title, description, status) VALUES ($1, $2, $3, $4) RETURNING *', [id, title, description, status], (error, results) => {
+      if (error) {
+        throw error
+      }
+      response.status(201).send(`Task added with ID: ${results.rows[0].id}`)
+    })
   }
 // - PUT /api/tasks/:id - Update an existing task
   const updateTask = (request, response) => {
+    const id = request.params.id;
+    const {title, description, status} = request.body  
+    pool.query(
+      'UPDATE tasks SET title= $2,description=$3, status=$4 WHERE id = $1',
+      [id, title, description, status],
+      (error, results) => {
+        if (error) {
+          throw error
+        }
+        response.status(200).send(`User modified with ID: ${id}`)
+      }
+    )
   }
 
 // - DELETE /api/tasks/:id - Delete a task by ID
   const deleteTask = (request, response) => {
+    const id = request.params.id
+    pool.query('DELETE FROM tasks WHERE id = $1', [id], (error, results) => {
+      if (error) {
+        throw error
+      }
+      response.status(200).send(`User deleted with ID: ${id}`)
+    })
   }
 
 
