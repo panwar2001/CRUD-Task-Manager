@@ -8,7 +8,8 @@ interface InitialState{
         status:string,
         title:string
     }>,
-    currentTask:Data
+    currentTask:Data,
+    newTask:boolean
 }
 interface Data {
     id:string,
@@ -29,6 +30,7 @@ const initialState:InitialState= {
         status: "To do",
         title: "",
       },
+      newTask:false
 }
 
 export const imageSlice = createSlice({
@@ -37,11 +39,6 @@ export const imageSlice = createSlice({
   reducers: { 
             updateData:(state:PayloadAction<Data>,action:PayloadAction<Data>)=>{
                 const len=state.data.length;
-                if(action.payload.id==""){
-                    action.payload.id=uuidv4();
-                   state.data=[action.payload,...state.data];
-                   return;                
-                }
                 for(let i=0;i<len;i++){
                     if(state.data[i].id==action.payload.id){
                         //if id found then update task
@@ -49,6 +46,8 @@ export const imageSlice = createSlice({
                         return;
                     }
                 }
+                state.data=[action.payload,...state.data];
+
             },
             updateDelete:(state:PayloadAction<Data>,action:PayloadAction<Data>)=>{
             let index=-1;

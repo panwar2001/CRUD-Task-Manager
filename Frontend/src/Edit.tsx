@@ -29,7 +29,7 @@ import { updateData,updateResetCurrentTask} from "./store/dataSlice"
 import { useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import { ChevronDown } from "lucide-react"
-
+import axios from 'axios';
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -57,7 +57,7 @@ function Edit({buttonText}) {
             Make changes to your task here. Click save when you're done.
             </DialogDescription>
           </DialogHeader>
-          <ProfileForm  setOpen={setOpen} />
+          <ProfileForm  setOpen={setOpen} newTask={buttonText} />
         </DialogContent>
       </Dialog>
     )
@@ -75,7 +75,7 @@ function Edit({buttonText}) {
             Make changes to your task here. Click save when you're done.
           </DrawerDescription>
         </DrawerHeader>
-        <ProfileForm  setOpen={setOpen}/>
+        <ProfileForm  setOpen={setOpen} newTask={buttonText}/>
         <DrawerFooter className="pt-2">
           <DrawerClose asChild>
             <Button variant="outline" onClick={()=>dispatch(updateResetCurrentTask())}>Cancel</Button>
@@ -88,15 +88,35 @@ function Edit({buttonText}) {
 const statusItems=["To do", "pending", "in progress", "blocked", "bug", "completed"];
 
 
-const ProfileForm=({setOpen})=> {
+const ProfileForm=({setOpen,newTask})=> {
   const dispatch=useDispatch();
   const [task,setTask]=useState(useSelector((state:RootState)=>state.Data.currentTask));
   const onSubmit=(e)=>{ 
     e.preventDefault();
+    const newId=uuidv4();
     if(task.title.trim()==""){
       return;
     }
-    dispatch(updateData(task));
+    if(newTask=='Add New Task'){
+    axios.post(`http://localhost:8000/api/tasks/`,{...task,id:newId})
+                  .then((response)=> {
+                    console.log(response.data)
+                    dispatch(updateData({...task,id:newId}));
+                  })
+                  .catch((error)=>{
+                    console.log(error);
+                  });
+          }
+          else{
+            axios.put(`http://localhost:8000/api/tasks/${task.id}`,task)
+            .then((response)=> {
+              console.log(response.data)
+              dispatch(updateData(task));
+            })
+            .catch((error)=>{
+              console.log(error);
+            });
+          }
     dispatch(updateResetCurrentTask());
     setOpen(false);
   }

@@ -34,6 +34,7 @@ import {
 import Edit from "./Edit";
 import axios from 'axios';
 import { updateInit,updateCurrentTask ,updateDelete} from './store/dataSlice';
+
 export const columns= [
   {
     accessorKey: "status",
@@ -72,7 +73,17 @@ export const columns= [
     },
     cell: ({ row }) =>{ 
     const dispatch=useDispatch();
-    return <div className="lowercase">{<Button onClick={()=>dispatch(updateDelete(row.original.id))} variant="secondary"><Trash2 className="text-red-900" /></Button>}</div>
+    const onDelete=()=>{
+      dispatch(updateDelete(row.original.id));
+      axios.delete(`http://localhost:8000/api/tasks/${row.original.id}`)
+      .then((response)=> {
+        console.log(response.data)
+      })
+      .catch((error)=>{
+        console.log(error);
+      });
+    }
+    return <div className="lowercase">{<Button onClick={()=>onDelete()} variant="secondary"><Trash2 className="text-red-900" /></Button>}</div>
     },
   }
 ]
