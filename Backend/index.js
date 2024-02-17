@@ -1,18 +1,18 @@
 const express=require('express');
 require('dotenv').config();
-const Cors=require('cors');
+const cors=require('cors');
 const app=express();
 app.use(express.json());
-app.use(Cors('*'))
+app.use(cors({origin: '*'}));
 const PORT=process.env.PORT|8000;
 const db=require('./db');
 
 // Retrieve all tasks
-app.get('/api/tasks',db.getTasks);
+app.get('/api/tasks/',db.getTasks);
 // Retrieve a specific task by ID
 app.get('/api/tasks/:id',db.getTaskById);
 // Create a new task
-app.post('/api/tasks',db.createTask);
+app.post('/api/tasks/',db.createTask);
 // Update an existing task
 app.put('/api/tasks/:id',db.updateTask);
 // Delete a task by ID

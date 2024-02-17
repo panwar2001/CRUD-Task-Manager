@@ -43,6 +43,7 @@ const getTasks = (request, response) => {
       if (error) {
         throw error
       }
+      console.log('- GET /api/tasks  Retrieve all tasks')
       response.status(200).json(results.rows)
     })
 }
@@ -55,18 +56,20 @@ const getTaskById = (request, response) => {
       if (error) {
         throw error
       }
+      console.log('- GET /api/tasks/:id - Retrieve a specific task by ID')
       response.status(200).json(results.rows)
     })
 }
 
 // - POST /api/tasks - Create a new task
 const createTask = (request, response) => {
-    const {id, title, description, status} = request.body
+    const {id, title, description, status} = request.body;
     pool.query('INSERT INTO tasks(id, title, description, status) VALUES ($1, $2, $3, $4) RETURNING *', [id, title, description, status], (error, results) => {
       if (error) {
         throw error
       }
-      response.status(201).send(`Task added with ID: ${results.rows[0].id}`)
+      console.log('- POST /api/tasks - Create a new task')
+      response.status(201).json({taskStatus:`Task added with ID: ${id}`})
     })
   }
 // - PUT /api/tasks/:id - Update an existing task
@@ -80,7 +83,8 @@ const createTask = (request, response) => {
         if (error) {
           throw error
         }
-        response.status(200).send(`User modified with ID: ${id}`)
+        console.log('- PUT /api/tasks/:id - Update an existing task')
+        response.status(200).json({taskStatus:`User modified with ID: ${id}`})
       }
     )
   }
@@ -92,7 +96,8 @@ const createTask = (request, response) => {
       if (error) {
         throw error
       }
-      response.status(200).send(`User deleted with ID: ${id}`)
+      console.log('- DELETE /api/tasks/:id - Delete a task by ID')
+      response.status(200).json({taskStatus:`User deleted with ID: ${id}`})
     })
   }
 
